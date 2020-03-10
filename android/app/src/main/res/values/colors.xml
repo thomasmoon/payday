@@ -1,0 +1,7 @@
+<resources>
+  <!-- We'll use 'background' name to reference this color -->
+  <!-- Replace #HEX_VALUE with Your color -->
+  <!-- Dark green<color name="payday_dark">#005B30</color>-->
+  <color name="payday_dark">#000000</color>
+  <color name="payday_text">#FFFFFF</color>
+</resources>
