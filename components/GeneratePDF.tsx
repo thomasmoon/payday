@@ -1,6 +1,9 @@
 // Import from 'react-native-pdf-lib'
 import PDFLib, { PDFDocument, PDFPage } from 'react-native-pdf-lib';
 
+// For pdf delivery
+//import RNFetchBlob from 'rn-fetch-blob'
+
 const generatePdf = async () => {
 
     // Create a PDF page with text and rectangles

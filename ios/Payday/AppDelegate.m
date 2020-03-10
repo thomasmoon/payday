@@ -20,8 +20,8 @@
                                                    moduleName:@"Payday"
                                             initialProperties:nil];
 
-  //rootView.backgroundColor = [UIColor colorWithRed:0.00 green:0.36 blue:0.19 alpha:1.0];
-  rootView.backgroundColor = [UIColor colorWithRed:0.00 green:0.00 blue:0.00 alpha:1.0];
+  rootView.backgroundColor = [UIColor colorWithRed:0.00 green:0.36 blue:0.19 alpha:1.0];
+  //rootView.backgroundColor = [UIColor colorWithRed:0.00 green:0.00 blue:0.00 alpha:1.0];
   
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [UIViewController new];

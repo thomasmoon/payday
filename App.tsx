@@ -11,7 +11,6 @@
 import React, { useState, useEffect } from 'react';
 import {
   Alert,
-  Animated,
   Image,
   SafeAreaView,
   ScrollView,
@@ -21,17 +20,16 @@ import {
   Text,
   TouchableOpacity, // In place of Button
   View,
-  ShadowPropTypesIOS
+  Dimensions
 } from 'react-native';
 
+// Shake phone to unlock the Mayday minigame
 import RNShake from 'react-native-shake';
 
 // Own components
-import FadeInView from './components/FadeInView';
+import AnimatedView from './components/AnimatedView';
 
-// For pdf delivery
-//import RNFetchBlob from 'rn-fetch-blob'
-
+// Svgs
 import Logo from './assets/svg/payday_logo.svg';
 import LogoAlt from './assets/svg/payday_logo_alt.svg';
 import BillBG from './assets/svg/payday_bill_bg.svg';
@@ -93,51 +91,56 @@ const App = () => {
 
 
   return (
-    <>
-      <StatusBar barStyle="light-content" backgroundColor='#f00' />
+    <View style={{
+      backgroundColor: mode==='payday'? PaydayColors.dark : PaydayColors.alt2
+      }}>
+      <StatusBar barStyle="light-content" />
       <SafeAreaView>
         <ScrollView
           contentInsetAdjustmentBehavior="automatic"
-          style={{...styles.scrollView, backgroundColor: mode==='payday'?PaydayColors.dark:PaydayColors.alt2}}>
+          style={{...styles.scrollView}}>
           <View style={{...styles.body}}>
             <View style={styles.sectionContainer}>
-              <View>
+              <TouchableOpacity onPress={toggleMode}>
                 {logo()}
-              </View>
+              </TouchableOpacity>
               <Text style={styles.sectionDescription}>
                 Calculating
               </Text>
             </View>
 
+            {/* import button */}
             <TouchableOpacity
-              style={styles.whiteButton}
-              onPress={toggleMode}>
-              <Text style={styles.whiteButtonText}>EASTER EGG</Text>
-              <View style={styles.whiteButtonHighlight} />
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.whiteButton}
+              style={{...styles.whiteButton, display: mode==='payday' ? 'flex':'none'}}
               onPress={onShare}>
-              <Text style={styles.whiteButtonText}>EXPORT</Text>
+              <Text style={styles.whiteButtonText}>IMPORT .CSV</Text>
               <View style={styles.whiteButtonHighlight} />
             </TouchableOpacity>
 
-            <FadeInView direction="up" style={{...styles.billView, display: mode === 'mayday' ? 'none' : 'flex'}}>
-              <BillBG style={styles.billBg} />
-              <Image
-                  style={styles.hundredEuros}
-                  source={require('./assets/img/payday_bill.png')} />
-            </FadeInView>
-
-            <FadeInView direction="left" style={{...styles.ship, display: mode === 'mayday' ? 'flex' : 'none'}}>
-              <Extra style={styles.billBg} />
-            </FadeInView>
+             {/* play button */}
+             <TouchableOpacity
+              style={{...styles.whiteButton, display: mode==='mayday' ? 'flex':'none'}}
+              onPress={onShare}>
+              <Text style={styles.whiteButtonText}>PLAY</Text>
+              <View style={styles.whiteButtonHighlight} />
+            </TouchableOpacity>
 
           </View>
         </ScrollView>
       </SafeAreaView>
-    </>
+
+      <AnimatedView id="payday" mode={mode} direction="up" style={{...styles.billView, display: mode === 'mayday' ? 'none' : 'flex'}}>
+        <BillBG style={styles.billBg} />
+        <Image
+            style={styles.hundredEuros}
+            source={require('./assets/img/payday_bill.png')} />
+      </AnimatedView>
+
+      <AnimatedView id="mayday" mode={mode} direction="left" style={{...styles.ship, display: mode === 'mayday' ? 'flex' : 'none'}}>
+        <Extra style={styles.billBg} />
+      </AnimatedView>
+      
+    </View>
   );
 };
 
@@ -176,9 +179,9 @@ const styles = StyleSheet.create({
     marginBottom: 0,
     padding: 15,
     shadowColor: '#000000',
-    shadowOffset: { width: 2, height: 3 },
+    shadowOffset: { width: 3, height: 4 },
     shadowOpacity: 1,
-    shadowRadius: 2,
+    shadowRadius: 0,
     elevation: 5,
     position: 'relative'
   },
@@ -199,7 +202,6 @@ const styles = StyleSheet.create({
   billView: {
     position: 'absolute',
     width: '120%',
-    height: 0,
     zIndex: 1
   },
   hundredEuros: {
