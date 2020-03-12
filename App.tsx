@@ -32,41 +32,25 @@ import AnimatedView from './components/AnimatedView';
 // Svgs
 import Logo from './assets/svg/payday_logo.svg';
 import LogoAlt from './assets/svg/payday_logo_alt.svg';
+import Bill from './assets/svg/euros.svg';
 import BillBG from './assets/svg/payday_bill_bg.svg';
 import Extra from './assets/svg/payday_extra.svg';
 
 let exportMsg = 'Payday | 03.2020';
 
-// Export the payroll info as text
-const onShare = async () => {
-  try {
-
-    let shareOptions = {
-      message: exportMsg
-    }
-
-    const result = await Share.share(shareOptions);
-
-    if (result.action === Share.sharedAction) {
-      if (result.activityType) {
-        // shared with activity type of result.activityType
-      } else {
-        // shared
-      }
-    } else if (result.action === Share.dismissedAction) {
-      // dismissed
-    }
-  } catch (error) {
-    Alert.alert(error.message);
-  }
-};
-
 const App = () => {
 
   const [mode, setMode] = useState("payday");
+  const [phase, setPhase] = useState(1);
 
   const toggleMode = () => {
     setMode(mode==='payday'? 'mayday':'payday');
+    setPhase(1);
+  }
+
+  const nextPhase = () => {
+    console.log('Trigger next phase', phase);
+    setPhase(phase+1);
   }
 
   useEffect(() => {
@@ -90,6 +74,32 @@ const App = () => {
   }
 
 
+  // Export the payroll info as text
+  const onShare = async () => {
+    try {
+
+      nextPhase();
+
+      let shareOptions = {
+        message: exportMsg
+      }
+
+      const result = await Share.share(shareOptions);
+
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          // shared with activity type of result.activityType
+        } else {
+          // shared
+        }
+      } else if (result.action === Share.dismissedAction) {
+        // dismissed
+      }
+    } catch (error) {
+      Alert.alert(error.message);
+    }
+  };
+
   return (
     <View style={{
       backgroundColor: mode==='payday'? PaydayColors.dark : PaydayColors.alt2
@@ -112,7 +122,7 @@ const App = () => {
             {/* import button */}
             <TouchableOpacity
               style={{...styles.whiteButton, display: mode==='payday' ? 'flex':'none'}}
-              onPress={onShare}>
+              onPress={nextPhase}>
               <Text style={styles.whiteButtonText}>IMPORT .CSV</Text>
               <View style={styles.whiteButtonHighlight} />
             </TouchableOpacity>
@@ -120,7 +130,7 @@ const App = () => {
              {/* play button */}
              <TouchableOpacity
               style={{...styles.whiteButton, display: mode==='mayday' ? 'flex':'none'}}
-              onPress={onShare}>
+              >
               <Text style={styles.whiteButtonText}>PLAY</Text>
               <View style={styles.whiteButtonHighlight} />
             </TouchableOpacity>
@@ -129,14 +139,15 @@ const App = () => {
         </ScrollView>
       </SafeAreaView>
 
-      <AnimatedView id="payday" mode={mode} direction="up" style={{...styles.billView, display: mode === 'mayday' ? 'none' : 'flex'}}>
+      <AnimatedView id="payday" mode={mode} phase={phase} style={{...styles.billView, display: mode === 'mayday' ? 'none' : 'flex'}}>
         <BillBG style={styles.billBg} />
-        <Image
+        <Bill style={styles.bill} />
+        {/*<Image
             style={styles.hundredEuros}
-            source={require('./assets/img/payday_bill.png')} />
+            source={require('./assets/img/payday_bill.png')} />*/}
       </AnimatedView>
 
-      <AnimatedView id="mayday" mode={mode} direction="left" style={{...styles.ship, display: mode === 'mayday' ? 'flex' : 'none'}}>
+      <AnimatedView id="mayday" mode={mode} phase={phase} style={{...styles.ship, display: mode === 'mayday' ? 'flex' : 'none'}}>
         <Extra style={styles.billBg} />
       </AnimatedView>
       
@@ -204,16 +215,22 @@ const styles = StyleSheet.create({
     width: '120%',
     zIndex: 1
   },
-  hundredEuros: {
-    width: '120%',
+  bill: {
     position: 'absolute',
-    top: -45,
-    left: 0,
-    zIndex: 2
+    top: -148,
+    left: 150,
+    zIndex: 2,
+    transform: [{
+      rotateX: '75deg'
+    },{
+      rotateY: '4deg',
+    },{
+      rotateZ: '-22deg'
+    },{
+      scale: 1.275
+    }] 
   },
   billBg: {
-    width: '120%',
-    height: 120,
     position: 'absolute',
     left: 0,
     top: 0,

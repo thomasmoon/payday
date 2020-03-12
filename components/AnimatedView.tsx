@@ -1,83 +1,120 @@
 import React, { useState, useEffect } from 'react';
 import { Animated, Dimensions } from 'react-native';
 
-// Global var to track the last mode
+// Global vars to track the last mode & phase
 let lastMode:string;
+let lastPhase:number;
 
 const AnimatedView = (props: any) => {
 
-    let min: number, max: number, duration: number;
+  const [translateX] = useState(new Animated.Value(0));
+  const [translateY] = useState(new Animated.Value(0));
+
+  let xMin: number, xMax: number;
+  let yMin: number, yMax: number;
+  let duration: number;
+
+  let animationStyle = {
+    ...props.style,
+    transform: [
+      {
+        translateX: translateX,
+      },{
+        translateY: translateY
+      }
+    ] // Use w/ native driver 
+  }
+
+  if (props.id === 'payday') {
+
+    // Half the window height
+    let maxHeight = Dimensions.get('window').height/2;
+
+    // Bill animation
+    xMin = 0;
+    xMax = 0;
+    yMin = 50;
+    yMax =  -maxHeight;
+    duration = 1000;
+
+    // styles
+    animationStyle.bottom = 0;
+
+  } else {
+    // Ship animation (Mayday minigame)
+    xMin = -3400;
+    xMax = 460;
+    yMin = 0;
+    yMax = 0;
+    duration = 4000;
+
+    // styles
+    animationStyle.bottom = -1500;
+  }
   
-    if (props.id === 'payday') {
+  React.useEffect(() => {
 
-      // Half the window height
-      let maxHeight = Dimensions.get('window').height/2;
+    // Always reset the animation when there's a mode change
+    //translateX.setValue(xMin);
+    //translateY.setValue(yMin);
 
-      // Bill animation
-      min = 0;
-      max =  -maxHeight;
-      duration = 1000;
+    // run the animation only when this view is active
+    if (props.mode === props.id && (props.mode != lastMode || props.phase != lastPhase)) {
+      // console.log('Mode has changed, so reset animation to min: ', min);
+      lastMode = props.mode;
 
-    } else {
-      // Ship animation (Mayday minigame)
-      min = -3400;
-      max = 460;
-      duration = 4000;
-    }
-    const [fadeAnim] = useState(new Animated.Value(min))  // Initial value for opacity: 0
+      console.log('Phase:', props.phase);
 
-    React.useEffect(() => {
+      // When going to phase 2 of Payday, dismiss the bill in a different way
+      if (props.phase > 1) {
+        // Reverse animation
+        [yMin, yMax] = [yMax, yMin];
+        
+        // Animate across the x-axis also
+        xMin = 0;
+        xMax = -1000;
+      }
 
-      // Always reset the animation when there's a mode change
-      fadeAnim.setValue(min);
+      translateX.setValue(xMin);
+      translateY.setValue(yMin);
 
-      // run the animation only when this view is active
-      if (props.mode === props.id && props.mode != lastMode) {
-        // console.log('Mode has changed, so reset animation to min: ', min);
-        lastMode = props.mode;
 
-        // The animation
+      if (xMin !== xMax) {
+        // The animation on x-axis
         Animated.timing(
-          fadeAnim,
+          translateX,
           {
-            toValue: max,
+            toValue: xMax,
             duration: duration,
             useNativeDriver: true
           }
         ).start();
-
       }
 
-    }, [props.mode]); // Limit this effect to redrawing only mode changes
+      if (yMin !== yMax) {
+        // The animation on y-axis
+        Animated.timing(
+          translateY,
+          {
+            toValue: yMax,
+            duration: duration,
+            useNativeDriver: true
+          }
+        ).start();
+      }
 
-    let animationStyle = {
-      ...props.style
     }
-  
-    // Use transforms with native driver 
-    animationStyle.transform = [];
 
-    if (props.direction === 'up') {
-      animationStyle.bottom = 0;
-      animationStyle.transform.push({
-        translateY: fadeAnim
-      })
-      //animationStyle.height = fadeAnim;
-    } else {
-      animationStyle.bottom = -1500;
-      animationStyle.transform.push({
-        translateX: fadeAnim
-      })
-    }
-  
-    return (
-      <Animated.View
-        style={animationStyle}
-      >
-        {props.children}
-      </Animated.View>
-    );
-  }
+  }, [props.mode, props.phase]); // Limit this effect to redrawing only mode changes
+
+  return (
+    <Animated.View
+      style={animationStyle}
+    >
+      {props.children}
+    </Animated.View>
+  );
+}
 
 
 export default AnimatedView;
