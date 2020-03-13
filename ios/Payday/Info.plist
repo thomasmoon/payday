@@ -54,6 +54,8 @@
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 	<key>UIAppFonts</key>
-	<array/>
+	<array>
+		<string>Times New Roman.ttf</string>
+	</array>
 </dict>
 </plist>

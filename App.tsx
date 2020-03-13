@@ -36,7 +36,16 @@ import Bill from './assets/svg/euros.svg';
 import BillBG from './assets/svg/payday_bill_bg.svg';
 import Extra from './assets/svg/payday_extra.svg';
 
+// File picker
+import DocumentPicker from 'react-native-document-picker';
+import * as RNFS from 'react-native-fs';
+
+// Payroll calculaton
+import { PayrollCalc } from './lib/payrollCalc/';
+
+const windowHeight = Dimensions.get('window').height;
 let exportMsg = 'Payday | 03.2020';
+let payrollOutput= '';
 
 const App = () => {
 
@@ -65,6 +74,7 @@ const App = () => {
   }, []);
 
 
+  // Render Payday / Mayday logo based on mode
   const logo = () => {
     if (mode === 'payday') {
       return <Logo width="100%" height="100" />
@@ -72,7 +82,6 @@ const App = () => {
       return <LogoAlt width="100%" height="100" />
     }
   }
-
 
   // Export the payroll info as text
   const onShare = async () => {
@@ -100,6 +109,92 @@ const App = () => {
     }
   };
 
+  // Import csv file
+  const importCsv = async () => {
+    try {
+      const res = await DocumentPicker.pick({
+        // DocumentPicker.types.plainText only works for .csv on iOS
+        type: [DocumentPicker.types.allFiles],
+      });
+
+
+      RNFS.readFile(res.uri, 'ascii').then(res=>{
+
+
+        // animate forward at this point
+        nextPhase();
+
+        // File contents
+        console.log(res);
+
+        // Calculate the payroll
+        let payrollCalc = new PayrollCalc(res);
+        payrollOutput = payrollCalc.processRows()
+
+        setTimeout(2000, ()=>{
+          nextPhase();
+        });
+      })
+      .catch(err => {
+        console.log(err.message, err.code);
+      });
+
+
+    } catch (err) {
+      if (DocumentPicker.isCancel(err)) {
+        // User cancelled the picker, exit any dialogs or menus and move on
+        console.log('Document picker cancelled');
+
+      } else {
+        console.log('Problem with file picker.');
+        throw err;
+      }
+    }
+  }
+
+  // Render the animation for the active screen
+  const renderAnimations = () => {
+    switch (mode) {
+      case 'mayday':
+        return (
+          <AnimatedView id="mayday" mode={mode} phase={phase} style={{...styles.maydayView, visibility: mode==='mayday'?'visible':'hidden'}}>
+            <Extra style={styles.shipBg} />
+          </AnimatedView>
+        )
+      case 'payday':
+        default:
+          return (
+            <AnimatedView id="payday" mode={mode} phase={phase} style={{...styles.paydayView, visibility: mode==='mayday'?'visible':'hidden'}}>
+              <BillBG style={styles.billBg} />
+              <Bill style={styles.bill} />
+              {/* Bitmap version of bill: <Image
+                  style={styles.hundredEuros}
+                  source={require('./assets/img/payday_bill.png')} />*/}
+            </AnimatedView>
+          )
+    }
+  }
+
+  // Render calculating
+  const renderCalculating = () => {
+    if (mode==='payday' && phase===2)
+    return (
+      <Text style={styles.sectionDescription}>
+        Calculating
+      </Text>
+    )
+  } 
+
+  // Render payroll output
+  const renderOutput = () => {
+    if (mode==='payday' && phase===3)
+    return (
+      <Text style={styles.sectionDescription}>
+        {payrollOutput}
+      </Text>
+    )
+  } 
+
   return (
     <View style={{
       backgroundColor: mode==='payday'? PaydayColors.dark : PaydayColors.alt2
@@ -114,15 +209,13 @@ const App = () => {
               <TouchableOpacity onPress={toggleMode}>
                 {logo()}
               </TouchableOpacity>
-              <Text style={styles.sectionDescription}>
-                Calculating
-              </Text>
+              {renderCalculating()}
             </View>
 
             {/* import button */}
             <TouchableOpacity
-              style={{...styles.whiteButton, display: mode==='payday' ? 'flex':'none'}}
-              onPress={nextPhase}>
+              style={{...styles.whiteButton, display: mode==='payday' && phase === 1 ? 'flex':'none'}}
+              onPress={importCsv}>
               <Text style={styles.whiteButtonText}>IMPORT .CSV</Text>
               <View style={styles.whiteButtonHighlight} />
             </TouchableOpacity>
@@ -139,17 +232,7 @@ const App = () => {
         </ScrollView>
       </SafeAreaView>
 
-      <AnimatedView id="payday" mode={mode} phase={phase} style={{...styles.billView, display: mode === 'mayday' ? 'none' : 'flex'}}>
-        <BillBG style={styles.billBg} />
-        <Bill style={styles.bill} />
-        {/*<Image
-            style={styles.hundredEuros}
-            source={require('./assets/img/payday_bill.png')} />*/}
-      </AnimatedView>
-
-      <AnimatedView id="mayday" mode={mode} phase={phase} style={{...styles.ship, display: mode === 'mayday' ? 'flex' : 'none'}}>
-        <Extra style={styles.billBg} />
-      </AnimatedView>
+      {renderAnimations()}
       
     </View>
   );
@@ -176,7 +259,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   sectionDescription: {
-    display: 'none',
     marginTop: 8,
     fontSize: 18,
     fontWeight: '700',
@@ -197,6 +279,7 @@ const styles = StyleSheet.create({
     position: 'relative'
   },
   whiteButtonText: {
+    color: '#000000',
     fontSize: 24,
     fontWeight: '700',
     textAlign: 'center'
@@ -210,7 +293,7 @@ const styles = StyleSheet.create({
     left: 12,
     right: 12
   },
-  billView: {
+  paydayView: {
     position: 'absolute',
     width: '120%',
     zIndex: 1
@@ -236,13 +319,18 @@ const styles = StyleSheet.create({
     top: 0,
     zIndex: 3
   },
-  ship: {
-    width: '120%',
+  maydayView: {
+    bottom: 50, // Show the top 2/3 of the ship
+    height: windowHeight/2, // Limit displayed area to half the screen
     position: 'absolute',
-    top: 300,
-    left: 0,
-    zIndex: 2
+    zIndex: 1
   },
+  shipBg: {
+    position: 'absolute',
+    left: -3400, // start offscreen to avoid flashes
+    top: 0,
+    zIndex: 2
+  }
 });
 
 export default App;

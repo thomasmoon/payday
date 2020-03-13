@@ -20,6 +20,7 @@
 		BC2439ACAA81F1158BD4BDE9 /* libPods-PaydayTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 908197B423FE27D0CB079462 /* libPods-PaydayTests.a */; };
 		D9837111FA2DD41154952449 /* libPods-Payday.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7824D03C78D501C750C08263 /* libPods-Payday.a */; };
 		FB6089231E3A0267A263E27E /* libPods-Payday-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 682FA4AE8F489BCAA05151F5 /* libPods-Payday-tvOS.a */; };
+		E5D317373A3A4A9695496E4C /* Times New Roman.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A46F640061E4428C84A4A4C2 /* Times New Roman.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -67,6 +68,7 @@
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
 		FCB580F6D89412B11FE68158 /* Pods-PaydayTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PaydayTests.debug.xcconfig"; path = "Target Support Files/Pods-PaydayTests/Pods-PaydayTests.debug.xcconfig"; sourceTree = "<group>"; };
+		A46F640061E4428C84A4A4C2 /* Times New Roman.ttf */ = {isa = PBXFileReference; name = "Times New Roman.ttf"; path = "../node_modules/react-native-pdf-lib/assets/Times New Roman.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -201,6 +203,7 @@
 		A43359CFE3FF4C12A5A186CA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				A46F640061E4428C84A4A4C2 /* Times New Roman.ttf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -349,6 +352,7 @@
 			files = (
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
+				E5D317373A3A4A9695496E4C /* Times New Roman.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
