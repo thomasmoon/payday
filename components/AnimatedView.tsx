@@ -42,37 +42,37 @@ const AnimatedView = (props: any) => {
 
   } else {
     // Ship animation (Mayday minigame)
-    xMin = -3400;
-    xMax = 460;
+    xMin = 0;
+    xMax = 3860;
     yMin = 0;
     yMax = 0;
     duration = 4000;
-
-    // styles
-    animationStyle.bottom = -1500;
   }
   
+  // Mode or Phase changes
   React.useEffect(() => {
 
     // Always reset the animation when there's a mode change
     //translateX.setValue(xMin);
     //translateY.setValue(yMin);
 
-    // run the animation only when this view is active
+    // Run animation when mode or last phase changes
+    // Limit to visible view
     if (props.mode === props.id && (props.mode != lastMode || props.phase != lastPhase)) {
       // console.log('Mode has changed, so reset animation to min: ', min);
       lastMode = props.mode;
-
-      console.log('Phase:', props.phase);
+      lastPhase = props.lastPhase;
 
       // When going to phase 2 of Payday, dismiss the bill in a different way
-      if (props.phase > 1) {
+      if ((props.id === 'payday' && props.mode !== 'payday') || props.phase > 1) {
         // Reverse animation
         [yMin, yMax] = [yMax, yMin];
         
-        // Animate across the x-axis also
-        xMin = 0;
-        xMax = -1000;
+        // Animate across the x-axis also, when proceeding in payday view
+        if (props.phase > 1) {
+          xMin = 0;
+          xMax = -1000;
+        }
       }
 
       translateX.setValue(xMin);
