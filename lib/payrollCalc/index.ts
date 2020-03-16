@@ -50,10 +50,14 @@ export class PayrollCalc {
             // Split row by commma
             let rowData = this.linesOfInput[i].split(',');
 
-            // Employee ID
-            // - This is a simple number which employees could be indexed by, though
-            //   we'll use a more robust approach that would allow for ids in other formats.
-            let employeeId = rowData[1];
+            // Deconstruct the parsed row array
+            const [
+                name,
+                employeeId,
+                date,
+                start,
+                end
+             ] = rowData;
 
             // Check if we have an item for this employee
             let existingRowIndex = this.employees.findIndex(findRow=>{
@@ -67,27 +71,18 @@ export class PayrollCalc {
             } else {
                 existingRow = {
                     id: employeeId,
-                    name: rowData[0],
+                    name: name,
                     time: 0,
                     overtime: 0
                 }
             }
 
-            // now add the time from this row to the record
-            // (tracking each day by employee)
-            let date:string = rowData[2];
-            let start:string = rowData[3];
-            let end:string = rowData[4];
-
-            console.log(`${rowData[0]} (${employeeId}) ${date} ${start} - ${end}`);
-   
+            //console.log(`${rowData[0]} (${employeeId}) ${date} ${start} - ${end}`);
         }
 
         console.log('Rows processed');
-
         return this.printPayroll();
     }
     private printPayroll () {
-        return 'Hello';
     }
 }

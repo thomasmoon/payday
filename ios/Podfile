@@ -36,7 +36,6 @@ target 'Payday' do
 
 
 
-  pod 'RNFS', :path => '../node_modules/react-native-fs'
 
   target 'PaydayTests' do
     inherit! :search_paths
