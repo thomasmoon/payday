@@ -8,28 +8,29 @@ const styles:any = {
   ...sharedStyle
 }
 
-const MaydayPlay = (props: any) => {
+const MaydayWait = (props: any) => {
 
   const nav = props.navigation;
 
   const next = () => {
     nav.navigate('Root', {
       mode: 'mayday',
-      phase: 2,
+      phase: 5,
       screen: '', // Route view will redirect to screen
     });
   }
  
   return (
     <View style={styles.activeScreen}>
+      <Text style={styles.helpText}>Incoming torpedo...</Text>
       <TouchableOpacity
-        style={styles.whiteButton}
-        onPress={next}>
-        <Text style={styles.whiteButtonText}>PLAY</Text>
+        onPress={next}
+        style={styles.whiteButton}>
+        <Text style={styles.whiteButtonText}>ATTACK</Text>
         <View style={styles.whiteButtonHighlight} />
       </TouchableOpacity>
     </View>
   )
 }
 
-export default MaydayPlay;
+export default MaydayWait;

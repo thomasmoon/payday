@@ -9,10 +9,6 @@ import sharedStyle from '../../sharedStyles';
 
 const styles: any = {
   ...sharedStyle,
-  calculating: {
-    textAlign: 'center',
-    alignItems: 'center'
-  },
   calculatingText: {
     fontSize: 18,
     lineHeight: 36,
@@ -20,17 +16,36 @@ const styles: any = {
     fontWeight: '700',
     color: '#000',
     textAlign: 'center'
+  },
+  activeScreen: {
+    ...sharedStyle.activeScreen,
+    alignItems: 'center'
   }
 }
 
 const PaydayCalculating = (props: any) => {
+
+  const nav = props.navigation;
+
+  const loadedCallback = () => {
+    
+    console.log('Calculating done, navigate to new screen');
+
+    // Don't send the screen here – we'll go through
+    // root w/ params to trigger animations first
+    nav.navigate('Root', {
+      mode: 'payday',
+      phase: 3,
+      screen: ''
+    })
+  }
  
   return (
-    <View style={styles.calculating}>
+    <View style={styles.activeScreen}>
       <Text style={styles.calculatingText}>
       Calculating
       </Text>
-      <Spinner />
+      <Spinner loadedCallback={loadedCallback} />
     </View>
   )
 }

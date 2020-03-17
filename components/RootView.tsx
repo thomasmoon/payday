@@ -1,7 +1,9 @@
 /* This is not in use yet,
    but eventually the main page might be in a route */
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+
 import {
   SafeAreaView,
   ScrollView,
@@ -29,7 +31,7 @@ import AnimatedView from './AnimatedView';
 // Svgs
 import Logo from '../assets/svg/payday_logo.svg';
 import LogoAlt from '../assets/svg/payday_logo_alt.svg';
-import Bill from '../assets/svg/euros.svg';
+import Bill from '../assets/svg/euros_simplified.svg';
 import BillBG from '../assets/svg/payday_bill_bg.svg';
 import Extra from '../assets/svg/payday_extra.svg';
 
@@ -45,25 +47,32 @@ const navigationContainerHeight:number = windowHeight - headerHeight;
 
 const RootView = (props:any) => {
 
-  const navigation = props.navigation;
+  const nav = props.navigation;
   const route = props.route;
 
   // State
   //const [mode, setMode] = useState("payday");
   //const [phase, setPhase] = useState(1);
 
-  let mode = 'payday';
-  let phase = 1;
+  let mode:string = 'payday';
+  let phase:number = 1;
+  let screen:string = '';
   
   if (typeof route.params !== 'undefined') {
     mode = route.params.mode;
     phase = route.params.phase;
+
+    if (typeof route.params.screen !== 'undefined') {
+      screen = route.params.screen;
+    } else {
+      screen = '';
+    }
   }
 
   useEffect(() => {
 
     RNShake.addEventListener('ShakeEvent', () => {
-      //toggleMode();
+      toggleMode();
     });
 
     return () => {
@@ -71,16 +80,49 @@ const RootView = (props:any) => {
     };
   }, []);
 
+  // Navigation events
+  useFocusEffect(() => {
+
+    //console.log('Hello from root navigation');
+    //console.log('mode: ' + mode);
+    //console.log('phase: ' + phase);
+    //console.log('screen: ' + screen);
+
+    // Navigate to correct phase manually through route
+    // (So the global animations are triggered)
+    if (phase > 1 && screen === '') {
+
+      let partialRoutes:string[] = [];
+
+      switch (mode) {
+        case 'mayday':
+          partialRoutes = ['Play', 'Ships', 'Target', 'Wait', 'GameOver'];
+          break;
+        case 'payday':
+          partialRoutes = ['Import', 'Calculating', 'List'];
+        default:
+      }
+
+      //console.log('Navigate to screen: ' + partialRoutes[phase-1])
+
+      // navigate to sub root
+      nav.navigate('Root', {
+        screen: partialRoutes[phase-1],
+        mode: mode,
+        phase: phase
+      })
+    }
+  });
+
   // These modes should be handled with navigation,
   // but the reskinning of the theme on the same page is more effective
   const toggleMode = () => {
-    /*setMode(mode==='payday'? 'mayday':'payday');
-    navigation.setParams({
-      mode: mode==='payday'? 'mayday':'payday'
-    });*/
-    /* reset phase when changing: setPhase(1); */
-    navigation.navigate('Root', {
-      mode: mode==='payday'? 'mayday':'payday'
+
+    // Payday <> Mayday, reset to phase 1
+    nav.navigate('Root', {
+      mode: mode==='payday'? 'mayday':'payday',
+      phase: 1,
+      screen: ''
     })
   }
 
@@ -99,7 +141,6 @@ const RootView = (props:any) => {
       case 'mayday':
         return (
           <AnimatedView id="mayday" style={{...styles.maydayView}} animationCallback={animationCallback}>
-            <Text>Hello</Text>
             <Extra style={styles.shipBg} />
           </AnimatedView>
         )
@@ -107,16 +148,20 @@ const RootView = (props:any) => {
         default:
           return (
             <AnimatedView id="payday" style={{...styles.paydayView}} animationCallback={animationCallback}>
+
               <BillBG style={styles.billBg} />
-              { Platform.OS === 'ios'|| true ?
-                /* SVG version */
+              <Bill style={styles.bill} />
+              
+              { /*
+              { Platform.OS === 'ios' || false ?
+                /* SVG version 
                 <Bill style={styles.bill} />
               :
-                /* Bitmap version */
+                /* Bitmap version 
                 <Image
                     style={styles.hundredEuros}
                     source={require('../assets/img/payday_bill.png')} />
-              }
+              }*/}
             </AnimatedView>
           )
     }
@@ -140,8 +185,8 @@ const RootView = (props:any) => {
 
       { /* this content won't bleed to the edge */ }
       <SafeAreaView>
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
+        <View /* or ScrollView
+          contentInsetAdjustmentBehavior="automatic" */
           style={{...styles.scrollView}}>
 
           <View style={{...styles.body}}>
@@ -154,7 +199,7 @@ const RootView = (props:any) => {
             </View>
 
             { /* partial views */ }
-            <View style={{height: navigationContainerHeight, width: Dimensions.get('window').width}}>
+            <View style={styles.navigationContainer}>
                 {mode === 'payday' ?
                   <PaydayStack  />
                 :
@@ -162,7 +207,7 @@ const RootView = (props:any) => {
                 }
             </View>
           </View>
-        </ScrollView>
+        </View>
       </SafeAreaView>
 
       {renderAnimations()}
@@ -180,6 +225,10 @@ const styles:any = StyleSheet.create({
   headerContainer: {
     marginVertical: 32,
     paddingHorizontal: 24,
+  },
+  navigationContainer: {
+    height: navigationContainerHeight,
+    width: Dimensions.get('window').width
   },
   whiteButton: {
     backgroundColor: '#efefef',
@@ -216,8 +265,10 @@ const styles:any = StyleSheet.create({
   },
   bill: {
     position: 'absolute',
-    top: -148,
-    left: 150,
+    top: -200,
+    left: 20,
+    width: '200%',
+    height: 500,
     zIndex: 2,
     transform: [{
       rotateX: '75deg'
@@ -225,9 +276,7 @@ const styles:any = StyleSheet.create({
       rotateY: '4deg',
     },{
       rotateZ: '-22deg'
-    },{
-      scale: 1.275
-    }] 
+    }]
   },
   billBg: {
     position: 'absolute',

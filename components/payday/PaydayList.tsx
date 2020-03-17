@@ -5,19 +5,16 @@ import { Employee } from '../../lib/payrollCalc/index';
 // Shared style
 import sharedStyle from '../../sharedStyles';
 
-const styles: any = {
-  ...sharedStyle
-}
-
 export default function PaydayList (props: any) {
 
     //const employees = props.employees;
 
-    const styles = {
+    const styles:any = {
         ...sharedStyle,
         payrollList: {
           backgroundColor: '#fff',
           marginHorizontal: 24,
+          marginBottom: 32,
           height: 300
         }
     }
@@ -57,10 +54,11 @@ export default function PaydayList (props: any) {
   };
 
     return (
-      <View style={styles.payrollList}>
-        <Text>Payroll list</Text>
+      <View style={styles.activeScreen}>
+        <Text style={styles.helpText}>Payroll list</Text>
         <FlatList
           data={employees}
+          style={styles.payrollList}
           renderItem={({ item: any }) => (
             <TouchableOpacity onPress={itemPressed}>
                 <Text>Test</Text>

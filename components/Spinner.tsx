@@ -6,8 +6,6 @@ import { useNavigation } from '@react-navigation/native';
 
 const Spinner = (props: any) => {
 
-    const navigation = useNavigation();
-
     const [spin] = useState(new Animated.Value(0));
 
     // this will be set to false when the view unmounts
@@ -21,12 +19,10 @@ const Spinner = (props: any) => {
         // End if this view is no longer active
         if (!animateSpinner || loopCount > maxLoops) {
 
-            console.log('Calculating done, navigate to new screen');
-            navigation.navigate('Root', {
-                screen: 'List',
-                mode: 'payday',
-                phase: 3
-            })
+            // callback if we have it
+            if (props.loadedCallback) {
+                props.loadedCallback();
+            }
             return;
         }
 

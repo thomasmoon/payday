@@ -17,9 +17,7 @@ const styles: any = {
 
 const PaydayImport = (props: any) => {
 
-  console.log('Import', props);
-
-  const navigation:any = props.navigation;
+  const nav:any = props.navigation;
 
   let payrollOutput:any = '';
  
@@ -34,10 +32,12 @@ const PaydayImport = (props: any) => {
 
       RNFS.readFile(res.uri, 'ascii').then(res=>{
 
-        // animate forward at this point
-        //nextPhase();
-
-        navigation.navigate('Calculating');
+        // animate forward at this point through root
+        nav.navigate('Root', {
+          mode: 'payday',
+          phase: 2,
+          screen: ''
+        });
 
         // Calculate the payroll
         let payrollCalc = new PayrollCalc(res);
@@ -61,7 +61,7 @@ const PaydayImport = (props: any) => {
   }
  
   return (
-    <View>
+    <View style={styles.activeScreen}>
       <TouchableOpacity
         style={styles.whiteButton}
         onPress={importCsv}>

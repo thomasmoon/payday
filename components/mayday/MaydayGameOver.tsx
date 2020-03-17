@@ -8,8 +8,8 @@ const styles:any = {
   ...sharedStyle
 }
 
-const MaydayPlay = (props: any) => {
-
+const MaydayGameOver = (props: any) => {
+ 
   const nav = props.navigation;
 
   const next = () => {
@@ -19,17 +19,19 @@ const MaydayPlay = (props: any) => {
       screen: '', // Route view will redirect to screen
     });
   }
- 
+
   return (
     <View style={styles.activeScreen}>
+      <Text style={styles.helpText}>Game Over</Text>
+      <Text style={styles.extraText}>You Win!</Text>
       <TouchableOpacity
-        style={styles.whiteButton}
-        onPress={next}>
-        <Text style={styles.whiteButtonText}>PLAY</Text>
+        onPress={next}
+        style={styles.whiteButton}>
+        <Text style={styles.whiteButtonText}>PLAY AGAIN</Text>
         <View style={styles.whiteButtonHighlight} />
       </TouchableOpacity>
     </View>
   )
 }
 
-export default MaydayPlay;
+export default MaydayGameOver;

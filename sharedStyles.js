@@ -9,16 +9,33 @@ sharedStyles.cartoonShadow = {
 };*/
 
 let sharedStyles = {
+    activeScreen: {
+        paddingTop: 32,
+        textAlign: 'center'
+    },
     cartoonShadow: {
         shadowColor: '#000000',
         shadowOffset: { width: 3, height: 4 },
         shadowOpacity: 1,
         shadowRadius: 0
     },
+    helpText: {
+        color: '#FFFFFF',
+        fontSize: 24,
+        textAlign: 'center',
+        marginBottom: 32
+    },
+    extraText: {
+        color: '#FFFFFF',
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginVertical: 128,
+        textAlign: 'center'
+    },
     whiteButton: {
         backgroundColor: '#efefef',
         borderRadius: 30,
-        margin: 30,
+        marginHorizontal: 32,
         marginBottom: 0,
         padding: 15,
         shadowColor: '#000000',

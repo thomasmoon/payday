@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Animated, Dimensions } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/core';
+import { useFocusEffect } from '@react-navigation/native';
 
 // Global vars to track the last mode & phase
 let lastMode:string;
@@ -8,8 +9,8 @@ let lastPhase:number;
 
 const AnimatedView = (props: any) => {
 
-  const navigation = useNavigation();
-  const route = useRoute();
+  const navigation:any = useNavigation();
+  const route:any = useRoute();
 
   let mode = 'payday';
   let phase = 1;
@@ -53,7 +54,7 @@ const AnimatedView = (props: any) => {
     xMax = 0;
     yMin = 50;
     yMax =  -maxHeight;
-    duration = 1000;
+    duration = 1500;
 
     // styles
     animationStyle.bottom = 0;
@@ -61,22 +62,20 @@ const AnimatedView = (props: any) => {
   } else {
     // Ship animation (Mayday minigame)
     xMin = 0;
-    xMax = 3860;
+    xMax = 3860 / 2;
     yMin = 0;
     yMax = 0;
-    duration = 4000;
+    duration = 1500;
   }
   
   // Mode or Phase changes
-  React.useEffect(() => {
+  useFocusEffect(() => {
+
+    //console.log('Focus on AnimationView');
 
     // Always reset the animation when there's a mode change
     //translateX.setValue(xMin);
     //translateY.setValue(yMin);
-
-    //const unsubscribe = navigation.addListener('focus', () => {
-
-    console.log('Focus Root page');
 
     // Run animation when mode or last phase changes
     // Limit to visible view
@@ -85,20 +84,32 @@ const AnimatedView = (props: any) => {
       lastMode = mode;
       lastPhase = phase;
 
-      // beyond phase 2, do nothing
-      if (phase > 2) {
+      // beyond phase 2 on payday, do nothing
+      if (mode === 'payday' && phase > 2) {
         return;
       }
 
-      // When going to phase 2 of Payday, dismiss the bill in a different way
-      if ((props.id === 'payday' && mode !== 'payday') || phase === 2) {
-        // Reverse animation
-        [yMin, yMax] = [yMax, yMin];
+      // Payday
+      if (props.id === 'payday') {
         
         // Animate across the x-axis also, when proceeding in payday view
         if (phase === 2) {
+          // Reverse animation
+          [yMin, yMax] = [yMax, yMin];
+
           xMin = 0;
           xMax = -1000;
+        }
+
+      // Mayday
+      } else {
+
+        if (phase === 2) {
+          xMin = 3860 / 2;
+          xMax = 3860;
+        } else if (phase > 2) {
+          xMin = 0;
+          xMax = 0;
         }
       }
 
@@ -125,9 +136,8 @@ const AnimatedView = (props: any) => {
         }
       ).start(animationCallback);
     }
-    //return unsubscribe;
   
-  }, [navigation]); // Limit this effect to redrawing only mode changes
+  });
 
   return (
     <Animated.View
