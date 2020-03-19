@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { Text, TouchableOpacity, View } from "react-native";
 
+// Custom components
+import GameBoard from './shared/GameBoard';
+
 // Shared style
 import sharedStyle from '../../sharedStyles';
 
@@ -23,6 +26,7 @@ const MaydayShips = (props: any) => {
   return (
     <View style={styles.activeScreen}>
       <Text style={styles.helpText}>Place Your Ships</Text>
+      <GameBoard />
       <TouchableOpacity
         onPress={next}
         style={styles.whiteButton}>
