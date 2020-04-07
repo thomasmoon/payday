@@ -3,15 +3,17 @@ import { Text, TouchableOpacity, View, Alert } from "react-native";
 
 // Shared style
 import sharedStyle from '../../../sharedStyles';
+const rowCount = 8;
 
 const styles:any = {
   ...sharedStyle,
-  gameTile:{
-      width: 32,
-      height: 32,
+  gameTileWrapper:{
+    padding: 1, 
+    width: `${1/rowCount*100}%`,
+  },
+  gameTile: {
       backgroundColor: '#fff',
-      marginRight: 2,
-      marginBottom: 2
+      paddingBottom: '100%',
   }
 }
 
@@ -23,13 +25,15 @@ const GameTile = ({id}:GameTile) => {
 
   const press = () => {
       Alert.alert(`Game tile ${id+1} pressed.`)
-
   }
+
   return(
-  <TouchableOpacity
-      style={styles.gameTile}
-      onPress={press}>
-  </TouchableOpacity>
+  <View style={styles.gameTileWrapper}>
+    <TouchableOpacity
+        style={styles.gameTile}
+        onPress={press}>
+    </TouchableOpacity>
+  </View>
   )
 }
 

@@ -13,7 +13,6 @@ const styles:any = {
     display: 'flex',
     flexDirection: 'row',
     flexWrap: 'wrap',
-    backgroundColor: '#ccc',
     marginHorizontal: 32,
     marginBottom: 32
   }
